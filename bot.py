@@ -3,6 +3,7 @@
 import logging
 from telegram import __version__ as TG_VER
 from core.models import Student
+from core.services import CoreCacheService
 from django.conf import settings
 try:
     from telegram import __version_info__
@@ -67,6 +68,9 @@ async def register_name(update: Update, context: ContextTypes.DEFAULT_TYPE) -> i
     message = update.message
     user_id = message.from_user.id
 
+    cache_service = CoreCacheService()
+    cache_service.cache_name(student_id=user_id,
+                             name=message.text)
     await message.reply_text(
         settings.MESSAGES['register_1'],
     )

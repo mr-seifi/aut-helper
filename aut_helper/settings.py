@@ -85,6 +85,8 @@ CACHES = {
         }
     }
 }
+REDIS_DEFAULT_EX = 60 * 5
+REDIS_REGISTER_EX = REDIS_DEFAULT_EX
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
