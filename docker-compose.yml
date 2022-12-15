@@ -11,5 +11,12 @@ services:
     env_file:
       - ./.env
 
+  redis:
+    image: redis:7.0.6-alpine
+    volumes:
+      - redis-data:/data/
+    restart: always
+
 volumes:
   data:
+  redis-data:
