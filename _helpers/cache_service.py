@@ -9,4 +9,6 @@ class BaseCacheService:
     }
     EX = 0
 
-
+    @staticmethod
+    def _get_redis_client() -> Redis:
+        return caches['default'].client.get_client()
