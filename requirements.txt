@@ -1,3 +1,6 @@
 Django==4.1.4
+django-redis==5.2.0
+ipython==8.7.0
 python-dotenv==0.21.0
 python-telegram-bot==20.0a6
+redis==4.4.0
