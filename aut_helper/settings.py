@@ -131,6 +131,9 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+# Payments
+MINIMUM_STUDENT_BALANCE = -25000
+
 # Telegram messages
 MESSAGES = {
     'register': 'Hey! Give me your name please!',
