@@ -19,3 +19,9 @@ class BaseCacheService:
 
     def _get(self, key):
         return self._client.get(key)
+
+    def _lpush(self, key, *vals):
+        return self._client.lpush(key, *vals)
+
+    def _lrange(self, key, l=0, r=-1):
+        return self._client.lrange(key, l, r)
