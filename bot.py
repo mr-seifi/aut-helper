@@ -98,7 +98,7 @@ async def register_number(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     cache_service = CoreCacheService()
     params = {'name': cache_service.get_name(student_id=user_id),
               'enter_year': cache_service.get_enter_year(student_id=user_id),
-              'number': message.text,
+              'phone_number': message.text,
               'student_id': user_id}
     if not params['name'] or not params['enter_year']:
         await message.reply_text(
