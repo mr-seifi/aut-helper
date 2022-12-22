@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'core',
     'easy_food',
     'easy_book',
+    'payment',
 ]
 
 MIDDLEWARE = [
@@ -87,6 +88,7 @@ CACHES = {
 }
 REDIS_DEFAULT_EX = 60 * 5
 REDIS_REGISTER_EX = REDIS_DEFAULT_EX
+REDIS_FOOD_EX = 60 * 60 * 7
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -130,16 +132,26 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+# Payments
+MINIMUM_STUDENT_BALANCE = -25000
+
 # Telegram messages
 MESSAGES = {
-    'register': 'Hey! Give me your name please!',
+    'register_name': 'Hey! Give me your name please!',
+    'register_enter_year': 'Hey! Give me your enter_year please!',
+    'register_number': 'Hey! Enter your number!',
+    'register_expired': 'Expired!',
+    'register_done': 'Congratulations!',
 }
 
 # Telegram states
 STATES = {
-    'menu': 0,
+    'register': 0,
     'register_1': 1,
     'register_2': 2,
     'register_3': 3,
-
+    'menu': 4,
 }
+
+
+

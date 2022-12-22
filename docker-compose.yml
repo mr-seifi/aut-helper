@@ -11,6 +11,15 @@ services:
     env_file:
       - ./.env
 
+  bot:
+    build: .
+    command: python manage.py startbot
+    volumes:
+      - data:/app/data/
+      - .:/app/
+    env_file:
+      - ./.env
+
   redis:
     image: redis:7.0.6-alpine
     volumes:
