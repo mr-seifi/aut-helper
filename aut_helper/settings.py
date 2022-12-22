@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'core',
     'easy_food',
     'easy_book',
+    'payment',
 ]
 
 MIDDLEWARE = [
@@ -136,15 +137,21 @@ MINIMUM_STUDENT_BALANCE = -25000
 
 # Telegram messages
 MESSAGES = {
-    'register': 'Hey! Give me your name please!',
     'register_name': 'Hey! Give me your name please!',
+    'register_enter_year': 'Hey! Give me your enter_year please!',
+    'register_number': 'Hey! Enter your number!',
+    'register_expired': 'Expired!',
+    'register_done': 'Congratulations!',
 }
 
 # Telegram states
 STATES = {
-    'menu': 0,
+    'register': 0,
     'register_1': 1,
     'register_2': 2,
     'register_3': 3,
-
+    'menu': 4,
 }
+
+
+
