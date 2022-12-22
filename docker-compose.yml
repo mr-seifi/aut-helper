@@ -11,6 +11,15 @@ services:
     env_file:
       - ./.env
 
+  migrate:
+    build: .
+    command: python manage.py migrate
+    volumes:
+      - data:/app/data/
+      - .:/app/
+    env_file:
+      - ./.env
+
   bot:
     build: .
     command: python manage.py startbot
