@@ -7,7 +7,7 @@ from core.models import Student
 from core.services import CoreCacheService
 from django.conf import settings
 from dotenv import load_dotenv
-from _helpers import weekday_to_persian_weekday
+from _helpers import weekday_to_persian_weekday, split
 from easy_food.services import FoodUpdaterService
 
 try:
@@ -156,28 +156,19 @@ async def food_reserve(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
     query = update.callback_query
     user_id = query.from_user.id
 
-    keyboard = [
-        [
-            InlineKeyboardButton('رزرو غذا', callback_data=0),
-            InlineKeyboardButton('کتابخانه', callback_data=1),
-        ],
-        [
-            InlineKeyboardButton('بوک‌بنک', callback_data=2),
-            InlineKeyboardButton('انتخاب واحد', callback_data=3),
-        ],
-        [
-            InlineKeyboardButton('کیف پول', callback_data=4)
-        ]
-    ]
-    markup = InlineKeyboardMarkup(keyboard)
     food_updater_service = FoodUpdaterService()
     food_cycle = '\n'.join([settings.MESSAGES['menu_food_item'].format(day=weekday_to_persian_weekday(weekday),
                                                                        food=food)
                             for weekday, food in food_updater_service.get_a_food_cycle().items()])
+    keyboard = split([
+        InlineKeyboardButton(weekday_to_persian_weekday(weekday), callback_data=weekday)
+        for weekday in food_updater_service.get_a_food_cycle().keys()
+    ], 4)
+    markup = InlineKeyboardMarkup(keyboard)
     await query.edit_message_text(
         f"{settings.MESSAGES['menu_food_main']}\n"
         f"{food_cycle}",
-        # reply_markup=markup,
+        reply_markup=markup,
         parse_mode=ParseMode.MARKDOWN,
     )
 
