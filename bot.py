@@ -7,7 +7,8 @@ from core.models import Student
 from core.services import CoreCacheService
 from django.conf import settings
 from dotenv import load_dotenv
-
+from _helpers import weekday_to_persian_weekday
+from easy_food.services import FoodUpdaterService
 try:
     from telegram import __version_info__
 except ImportError:
@@ -20,7 +21,7 @@ if __version_info__ < (20, 0, 0, "alpha", 5):
         f"visit https://docs.python-telegram-bot.org/en/v{TG_VER}/examples.html"
     )
 
-from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
+from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -28,6 +29,7 @@ from telegram.ext import (
     ConversationHandler,
     MessageHandler,
     filters,
+    CallbackQueryHandler,
 )
 
 # Enable logging
@@ -50,9 +52,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     if not is_registered:
         return await register(update, context)
 
-    # await menu(update, context)
-
-    return settings.STATES['menu']
+    return await menu(update, context)
 
 
 async def register(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
@@ -115,6 +115,63 @@ async def register_number(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
     return ConversationHandler.END
 
 
+async def menu(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
+    message = update.message
+    user_id = message.from_user.id
+
+    keyboard = [
+        [
+            InlineKeyboardButton('رزرو غذا', callback_data=0),
+            InlineKeyboardButton('کتابخانه', callback_data=1),
+        ],
+        [
+            InlineKeyboardButton('بوک‌بنک', callback_data=2),
+            InlineKeyboardButton('انتخاب واحد', callback_data=3),
+        ],
+        [
+            InlineKeyboardButton('کیف پول', callback_data=4)
+        ]
+    ]
+    markup = InlineKeyboardMarkup(keyboard)
+    await message.reply_text(
+        settings.MESSAGES['menu'],
+        reply_markup=markup
+    )
+
+    return settings.STATES['menu']
+
+
+async def food_reserve(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
+    message = update.message
+    user_id = message.from_user.id
+
+    keyboard = [
+        [
+            InlineKeyboardButton('رزرو غذا', callback_data=0),
+            InlineKeyboardButton('کتابخانه', callback_data=1),
+        ],
+        [
+            InlineKeyboardButton('بوک‌بنک', callback_data=2),
+            InlineKeyboardButton('انتخاب واحد', callback_data=3),
+        ],
+        [
+            InlineKeyboardButton('کیف پول', callback_data=4)
+        ]
+    ]
+    markup = InlineKeyboardMarkup(keyboard)
+    food_updater_service = FoodUpdaterService()
+
+    await message.reply_text(
+        f"{settings.MESSAGES['menu_food_main']}\n"
+        f"""{[settings.MESSAGES['menu_food_item'].format(day=weekday_to_persian_weekday(weekday),
+                                                         food=food) 
+              for weekday, food in food_updater_service.get_a_food_cycle().items()]}""",
+        # reply_markup=markup
+    )
+
+    return settings.STATES['menu']
+
+
 def main() -> None:
     application = Application.builder().token(os.getenv('BOT_TOKEN')).build()
 
@@ -133,6 +190,9 @@ def main() -> None:
             settings.STATES['register_3']: [
                 MessageHandler(filters.TEXT & ~filters.COMMAND, register_number)
             ],
+            settings.STATES['menu']: [
+                CallbackQueryHandler(food_reserve, pattern=r'^0$')
+            ]
         },
         fallbacks=[CommandHandler('start', start)]
     ))

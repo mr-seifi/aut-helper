@@ -11,10 +11,10 @@ class FoodUpdaterService:
         return list(map(lambda x: x[0], sample(FoodChoices.choices, len(FoodChoices.choices))))
 
     @classmethod
-    def get_daily_available_foods(cls, cache=True):
+    def get_daily_available_foods(cls, date=timezone.now().date(), cache=True):
         cache_service = FoodCacheService()
 
-        _today = timezone.now().date()
+        _today = date
         cached_foods = cache_service.get_foods(date=_today)
         if cached_foods:
             return cached_foods
@@ -25,3 +25,11 @@ class FoodUpdaterService:
 
         cache_service.cache_foods(_today, selected_foods)
         return selected_foods
+
+    @classmethod
+    def get_a_food_cycle(cls, cache=True):
+        _dates = [timezone.now().date() + timezone.timedelta(days=i) for i in range(7)]
+
+        return {date.weekday(): cls.get_daily_available_foods(date=date,
+                                                              cache=cache)
+                for date in _dates}
