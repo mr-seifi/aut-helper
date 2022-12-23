@@ -9,6 +9,7 @@ from django.conf import settings
 from dotenv import load_dotenv
 from _helpers import weekday_to_persian_weekday
 from easy_food.services import FoodUpdaterService
+
 try:
     from telegram import __version_info__
 except ImportError:
@@ -21,7 +22,15 @@ if __version_info__ < (20, 0, 0, "alpha", 5):
         f"visit https://docs.python-telegram-bot.org/en/v{TG_VER}/examples.html"
     )
 
-from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import (
+    ReplyKeyboardMarkup,
+    ReplyKeyboardRemove,
+    Update,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
+
+)
+
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -31,6 +40,8 @@ from telegram.ext import (
     filters,
     CallbackQueryHandler,
 )
+
+from telegram.constants import ParseMode
 
 # Enable logging
 logging.basicConfig(
@@ -160,13 +171,14 @@ async def food_reserve(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
     ]
     markup = InlineKeyboardMarkup(keyboard)
     food_updater_service = FoodUpdaterService()
-
+    food_cycle = '\n'.join([settings.MESSAGES['menu_food_item'].format(day=weekday_to_persian_weekday(weekday),
+                                                                       food=food)
+                            for weekday, food in food_updater_service.get_a_food_cycle().items()])
     await query.edit_message_text(
         f"{settings.MESSAGES['menu_food_main']}\n"
-        f"""{[settings.MESSAGES['menu_food_item'].format(day=weekday_to_persian_weekday(weekday),
-                                                         food=food) 
-              for weekday, food in food_updater_service.get_a_food_cycle().items()]}""",
-        # reply_markup=markup
+        f"{food_cycle}",
+        # reply_markup=markup,
+        parse_mode=ParseMode.MARKDOWN,
     )
 
     return settings.STATES['menu']
