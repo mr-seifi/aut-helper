@@ -8,7 +8,7 @@ class FoodUpdaterService:
 
     @classmethod
     def _get_available_from_aut(cls):
-        return list(map(lambda x: x[0], sample(FoodChoices.choices, len(FoodChoices.choices))))
+        return list(map(lambda x: x[0], sample(FoodChoices.choices, 1)))[0]
 
     @classmethod
     def get_daily_available_foods(cls, date=timezone.now().date(), cache=True):
@@ -17,7 +17,7 @@ class FoodUpdaterService:
         _today = date
         cached_foods = cache_service.get_foods(date=_today)
         if cached_foods:
-            return cached_foods
+            return cached_foods[0].decode()
 
         selected_foods = cls._get_available_from_aut()
         if not cache:
