@@ -142,8 +142,8 @@ async def menu(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
 
 
 async def food_reserve(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
-    message = update.message
-    user_id = message.from_user.id
+    query = update.callback_query
+    user_id = query.from_user.id
 
     keyboard = [
         [
@@ -161,7 +161,7 @@ async def food_reserve(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
     markup = InlineKeyboardMarkup(keyboard)
     food_updater_service = FoodUpdaterService()
 
-    await message.reply_text(
+    await query.edit_message_text(
         f"{settings.MESSAGES['menu_food_main']}\n"
         f"""{[settings.MESSAGES['menu_food_item'].format(day=weekday_to_persian_weekday(weekday),
                                                          food=food) 
