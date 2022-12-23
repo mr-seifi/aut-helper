@@ -5,7 +5,8 @@ from django.conf import settings
 class FoodCacheService(BaseCacheService):
     PREFIX = 'F'
     KEYS = {
-        'food': f'{PREFIX}'':{date}'
+        'food': f'{PREFIX}'':{date}',
+        'food_price': f'{PREFIX}'':{food}_PRICE'
     }
     EX = settings.REDIS_FOOD_EX
 
@@ -23,3 +24,14 @@ class FoodCacheService(BaseCacheService):
                 date=date
             )
         )
+
+    def cache_food_price(self, food, price):
+        return self._set(
+            self.KEYS['food_price'].format(food=food),
+            price,
+        )
+
+    def get_food_price(self, food):
+        return (self._get(
+            self.KEYS['food_price'].format(food=food)
+        ) or b'0').decode()

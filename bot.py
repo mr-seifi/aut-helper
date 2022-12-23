@@ -8,7 +8,7 @@ from core.services import CoreCacheService
 from django.conf import settings
 from dotenv import load_dotenv
 from _helpers import weekday_to_persian_weekday, split
-from easy_food.services import FoodUpdaterService
+from easy_food.services import FoodUpdaterService, FoodCacheService
 
 try:
     from telegram import __version_info__
@@ -173,6 +173,34 @@ async def food_reserve(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
     )
 
     return settings.STATES['menu']
+
+
+async def food_reserve_confirm(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
+    query = update.callback_query
+    user_id = query.from_user.id
+
+    food_updater_service = FoodUpdaterService()
+    food_cache_service = FoodCacheService()
+    food = food_updater_service.get_a_food_cycle()[int(query.data)]
+
+    keyboard = [
+        [
+            InlineKeyboardButton('آره', callback_data=1)
+        ],
+        [
+            InlineKeyboardButton('نه', callback_data=0)
+        ]
+    ]
+    markup = InlineKeyboardMarkup(keyboard)
+    await query.edit_message_text(
+        settings.MESSAGES['menu_food_reserve_confirm'].format(
+            food=food,
+            price=food_cache_service.get_food_price(food=food),
+            day=weekday_to_persian_weekday(int(query.data))
+        ),
+        reply_markup=markup,
+        parse_mode=ParseMode.MARKDOWN
+    )
 
 
 def main() -> None:

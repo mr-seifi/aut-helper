@@ -144,7 +144,8 @@ MESSAGES = {
     'register_done': 'Congratulations!',
     'menu': 'Menu!',
     'menu_food_main': 'منوی غذای این هفته\n',
-    'menu_food_item': '{day}: *{food}*'
+    'menu_food_item': '{day}: *{food}*',
+    'menu_food_reserve_confirm': 'آیا مطمئنی می‌خوای *{food}* رو با قیمت *{price}* تومان برای روز *{day}* رزرو کنی؟'
 }
 
 # Telegram states
