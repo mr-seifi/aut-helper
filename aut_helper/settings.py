@@ -142,6 +142,9 @@ MESSAGES = {
     'register_number': 'Hey! Enter your number!',
     'register_expired': 'Expired!',
     'register_done': 'Congratulations!',
+    'menu': 'Menu!',
+    'menu_food_main': 'منوی غذای این هفته\n',
+    'menu_food_item': '{day}: *{food}*\n'
 }
 
 # Telegram states
