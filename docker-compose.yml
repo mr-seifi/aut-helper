@@ -92,3 +92,5 @@ services:
 volumes:
   data:
   redis-data:
+  prometheus-data:
+  grafana-data:
