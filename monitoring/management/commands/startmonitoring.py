@@ -12,7 +12,7 @@ class Command(BaseCommand):
         self.stdout.write("It's now %s" % time)
 
         prometheus_service = PrometheusService()
-        prometheus_service.runserver(8080)
+        prometheus_service.runserver()
 
         while True:
             prometheus_service.send()
