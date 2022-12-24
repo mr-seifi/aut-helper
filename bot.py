@@ -6,7 +6,6 @@ from telegram import __version__ as TG_VER
 from core.models import Student
 from core.services import CoreCacheService
 from django.conf import settings
-from django.utils import timezone
 from dotenv import load_dotenv
 from _helpers import weekday_to_persian_weekday, weekday_to_date_from_now, split, NotEnoughBalance
 from easy_food.services import FoodUpdaterService, FoodCacheService, FoodReservationService
@@ -169,12 +168,18 @@ async def food_reserve(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
     user_id = query.from_user.id
 
     food_updater_service = FoodUpdaterService()
-    food_cycle = '\n'.join([settings.MESSAGES['menu_food_item'].format(day=weekday_to_persian_weekday(weekday),
-                                                                       food=food)
+    food_reservation_service = FoodReservationService()
+    _reserved_weekdays = food_reservation_service.get_weekday_student_cycle_reserved_foods(student_id=user_id)
+
+    food_cycle = '\n'.join([(settings.MESSAGES['menu_food_item'].format(day=weekday_to_persian_weekday(weekday),
+                                                                        food=food),
+                             settings.MESSAGES['menu_food_item_reserved'].format(
+                                 day=weekday_to_persian_weekday(weekday),
+                                 food=food))[weekday in _reserved_weekdays]
                             for weekday, food in food_updater_service.get_a_food_cycle().items()])
     keyboard = split([
         InlineKeyboardButton(weekday_to_persian_weekday(weekday), callback_data=weekday)
-        for weekday in food_updater_service.get_a_food_cycle().keys()
+        for weekday in food_updater_service.get_a_food_cycle().keys() if weekday not in _reserved_weekdays
     ], 4)
     markup = InlineKeyboardMarkup(keyboard)
     await query.edit_message_text(

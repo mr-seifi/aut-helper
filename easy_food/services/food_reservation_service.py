@@ -2,6 +2,7 @@ from easy_food.models import Food
 from easy_food.services import FoodCacheService
 from payment.services import PaymentService
 from core.models import Student
+from django.utils import timezone
 
 
 class FoodReservationService:
@@ -26,3 +27,10 @@ class FoodReservationService:
         return Food.objects.filter(
             reserved_date=date
         )
+
+    @classmethod
+    def get_weekday_student_cycle_reserved_foods(cls, student_id):
+        return list(map(lambda x: x.weekday(), Food.objects.filter(
+            reserved_date__gte=timezone.now().date(),
+            student__student_id__exact=student_id
+        ).values_list('reserved_date', flat=True)))
