@@ -349,6 +349,19 @@ async def transaction_history(update: Update, _: ContextTypes.DEFAULT_TYPE) -> i
     return ConversationHandler.END
 
 
+async def bookbank_reference(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
+    query = update.callback_query
+    user_id = query.from_user.id
+
+    await query.answer()
+    await query.message.reply_photo(
+        photo='asset/book-bank.jpg',
+        caption=settings.MESSAGES['bookbank_reference']
+    )
+
+    return ConversationHandler.END
+
+
 def main() -> None:
     application = Application.builder().token(os.getenv('BOT_TOKEN')).build()
 
@@ -369,6 +382,7 @@ def main() -> None:
             ],
             settings.STATES['menu']: [
                 CallbackQueryHandler(food_reserve, pattern=r'^0$'),
+                CallbackQueryHandler(bookbank_reference, pattern=r'^2$'),
                 CallbackQueryHandler(wallet, pattern=r'^4$'),
             ],
             settings.STATES['food']: [

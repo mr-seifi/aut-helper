@@ -158,6 +158,7 @@ MESSAGES = {
     'wallet_deposit': 'مبلغی که می‌خواهید به ولت خود اضافه کنید را انتخاب کنید.',
     'wallet_deposit_done': 'عملیات با موفقیت انجام شد.',
     'transactions_history': 'تراکنش‌های شما',
+    'bookbank_reference': 'برای دسترسی به بزرگ‌ترین کتابخانه‌ی تلگرام به @bookbank_robot پیام دهید.',
 }
 
 # Telegram states
