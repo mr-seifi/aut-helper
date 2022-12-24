@@ -12,4 +12,4 @@ class Transaction(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'{self.tx_hash.hex[:6]}|{self.created}|{self.price:,} Toman'
+        return f'{self.tx_hash.hex[:6]}|{self.created.strftime("%Y-%m-%d %H:%M")}|{self.price:,} Toman'
