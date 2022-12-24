@@ -31,7 +31,7 @@ class FoodCacheService(BaseCacheService):
             price,
         )
 
-    def get_food_price(self, food):
-        return (self._get(
+    def get_food_price(self, food) -> int:
+        return int((self._get(
             self.KEYS['food_price'].format(food=food)
-        ) or b'0').decode()
+        ) or b'0').decode())

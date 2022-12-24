@@ -14,7 +14,7 @@ class PaymentService:
         if int(student.balance) - int(price) < settings.MINIMUM_STUDENT_BALANCE:
             raise NotEnoughBalance
 
-        student.balance -= price
+        student.balance -= int(price)
         student.save()
 
         return Transaction.objects.create(
