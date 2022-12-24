@@ -150,7 +150,9 @@ MESSAGES = {
     'menu': 'Menu!',
     'menu_food_main': 'منوی غذای این هفته\n',
     'menu_food_item': '{day}: *{food}*',
-    'menu_food_reserve_confirm': 'آیا مطمئنی می‌خوای *{food}* رو با قیمت *{price}* تومان برای روز *{day}* رزرو کنی؟'
+    'menu_food_reserve_confirm': 'آیا مطمئنی می‌خوای *{food}* رو با قیمت *{price}* تومان برای روز *{day}* رزرو کنی؟',
+    'menu_food_reserve_done': 'غذا با موفقیت رزرو شد.',
+    'not_enough_balance': 'موجودی کافی نیست.',
 }
 
 # Telegram states
@@ -160,6 +162,7 @@ STATES = {
     'register_2': 2,
     'register_3': 3,
     'menu': 4,
+    'food': 5,
 }
 
 

@@ -6,9 +6,10 @@ from telegram import __version__ as TG_VER
 from core.models import Student
 from core.services import CoreCacheService
 from django.conf import settings
+from django.utils import timezone
 from dotenv import load_dotenv
-from _helpers import weekday_to_persian_weekday, split
-from easy_food.services import FoodUpdaterService, FoodCacheService
+from _helpers import weekday_to_persian_weekday, weekday_to_date_from_now, split, NotEnoughBalance
+from easy_food.services import FoodUpdaterService, FoodCacheService, FoodReservationService
 
 try:
     from telegram import __version_info__
@@ -172,7 +173,7 @@ async def food_reserve(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
         parse_mode=ParseMode.MARKDOWN,
     )
 
-    return settings.STATES['menu']
+    return settings.STATES['food']
 
 
 async def food_reserve_confirm(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
@@ -182,25 +183,59 @@ async def food_reserve_confirm(update: Update, _: ContextTypes.DEFAULT_TYPE) -> 
     food_updater_service = FoodUpdaterService()
     food_cache_service = FoodCacheService()
     food = food_updater_service.get_a_food_cycle()[int(query.data)]
+    food_price = food_cache_service.get_food_price(food=food)
 
     keyboard = [
         [
-            InlineKeyboardButton('آره', callback_data=1)
+            InlineKeyboardButton('آره', callback_data=f'1:{int(query.data)}')
         ],
         [
-            InlineKeyboardButton('نه', callback_data=0)
+            InlineKeyboardButton('نه', callback_data=f'0:{int(query.data)}')
         ]
     ]
     markup = InlineKeyboardMarkup(keyboard)
     await query.edit_message_text(
         settings.MESSAGES['menu_food_reserve_confirm'].format(
             food=food,
-            price=food_cache_service.get_food_price(food=food),
+            price=food_price,
             day=weekday_to_persian_weekday(int(query.data))
         ),
         reply_markup=markup,
         parse_mode=ParseMode.MARKDOWN
     )
+
+    return settings.STATES['food']
+
+
+async def food_reserve_done(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
+    query = update.callback_query
+    user_id = query.from_user.id
+
+    if '0:' in query.data:
+        return await menu(update, _)
+
+    food_updater_service = FoodUpdaterService()
+    food_reservation_service = FoodReservationService()
+    _week_day = int(query.data.split(':')[-1])
+    _reservation_date = weekday_to_date_from_now(_week_day)
+    food = food_updater_service.get_a_food_cycle()[_week_day]
+
+    try:
+        food_reservation_service.reserve_food(student_id=user_id,
+                                              food=food,
+                                              reserve_date=_reservation_date)
+    except NotEnoughBalance:
+        await query.edit_message_text(
+            settings.MESSAGES['not_enough_balance']
+        )
+
+        return ConversationHandler.END
+
+    await query.edit_message_text(
+        settings.MESSAGES['menu_food_reserve_done']
+    )
+
+    return ConversationHandler.END
 
 
 def main() -> None:
@@ -222,7 +257,11 @@ def main() -> None:
                 MessageHandler(filters.TEXT & ~filters.COMMAND, register_number)
             ],
             settings.STATES['menu']: [
-                CallbackQueryHandler(food_reserve, pattern=r'^0$')
+                CallbackQueryHandler(food_reserve, pattern=r'^0$'),
+            ],
+            settings.STATES['food']: [
+                CallbackQueryHandler(food_reserve_confirm, pattern=r'^[0-6]$'),
+                CallbackQueryHandler(food_reserve_done, pattern=r'^(0|1)\:[0-9]$'),
             ]
         },
         fallbacks=[CommandHandler('start', start)]
