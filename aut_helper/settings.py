@@ -154,6 +154,10 @@ MESSAGES = {
     'menu_food_reserve_confirm': 'آیا مطمئنی می‌خوای *{food}* رو با قیمت *{price}* تومان برای روز *{day}* رزرو کنی؟',
     'menu_food_reserve_done': 'غذا با موفقیت رزرو شد.',
     'not_enough_balance': 'موجودی کافی نیست.',
+    'wallet': 'موجودی شما: *{balance}* تومان',
+    'wallet_deposit': 'مبلغی که می‌خواهید به ولت خود اضافه کنید را انتخاب کنید.',
+    'wallet_deposit_done': 'عملیات با موفقیت انجام شد.',
+    'transactions_history': 'تراکنش‌های شما',
 }
 
 # Telegram states
@@ -164,6 +168,7 @@ STATES = {
     'register_3': 3,
     'menu': 4,
     'food': 5,
+    'wallet': 6,
 }
 
 

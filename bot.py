@@ -9,6 +9,8 @@ from django.conf import settings
 from dotenv import load_dotenv
 from _helpers import weekday_to_persian_weekday, weekday_to_date_from_now, split, NotEnoughBalance
 from easy_food.services import FoodUpdaterService, FoodCacheService, FoodReservationService
+from payment.services import PaymentService
+from payment.enums import TransactionChoices
 
 try:
     from telegram import __version_info__
@@ -257,6 +259,96 @@ async def food_reserve_done(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int
     return ConversationHandler.END
 
 
+async def wallet(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
+    query = update.callback_query
+    user_id = query.from_user.id
+
+    balance = Student.objects.filter(student_id__exact=user_id).first().balance
+    await query.answer()
+
+    keyboard = [
+        [
+            InlineKeyboardButton('افزایش موجودی', callback_data=0)
+        ],
+        [
+            InlineKeyboardButton('تراکنش‌ها', callback_data=1)
+        ]
+    ]
+    markup = InlineKeyboardMarkup(keyboard)
+    await query.edit_message_text(
+        settings.MESSAGES['wallet'].format(balance=balance),
+        parse_mode=ParseMode.MARKDOWN,
+        reply_markup=markup
+    )
+
+    return settings.STATES['wallet']
+
+
+async def wallet_deposit(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
+    query = update.callback_query
+    user_id = query.from_user.id
+
+    await query.answer()
+    keyboard = [
+        [
+            InlineKeyboardButton('20,000 تومان', callback_data=20000)
+        ],
+        [
+            InlineKeyboardButton('50,000 تومان', callback_data=50000)
+        ],
+        [
+            InlineKeyboardButton('100,000 تومان', callback_data=100000)
+        ]
+    ]
+    markup = InlineKeyboardMarkup(keyboard)
+    await query.edit_message_text(
+        settings.MESSAGES['wallet_deposit'],
+        parse_mode=ParseMode.MARKDOWN,
+        reply_markup=markup
+    )
+
+    return settings.STATES['wallet']
+
+
+async def wallet_deposit_done(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
+    query = update.callback_query
+    user_id = query.from_user.id
+
+    await query.answer()
+    balance = int(query.data)
+
+    payment_service = PaymentService()
+    payment_service.make_transaction(price=balance,
+                                     student_id=user_id,
+                                     transaction_type=TransactionChoices.DEPOSIT)
+
+    await query.edit_message_text(
+        settings.MESSAGES['wallet_deposit_done'],
+        parse_mode=ParseMode.MARKDOWN,
+    )
+
+    return ConversationHandler.END
+
+
+async def transaction_history(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
+    query = update.callback_query
+    user_id = query.from_user.id
+
+    await query.answer()
+
+    payment_service = PaymentService()
+    transactions = payment_service.get_student_transactions(student_id=user_id)
+
+    transactions_message = '\n'.join(map(lambda t: str(t), transactions))
+    await query.edit_message_text(
+        f"{settings.MESSAGES['transactions_history']}\n\n"
+        f"{transactions_message}",
+        parse_mode=ParseMode.MARKDOWN,
+    )
+
+    return ConversationHandler.END
+
+
 def main() -> None:
     application = Application.builder().token(os.getenv('BOT_TOKEN')).build()
 
@@ -277,10 +369,16 @@ def main() -> None:
             ],
             settings.STATES['menu']: [
                 CallbackQueryHandler(food_reserve, pattern=r'^0$'),
+                CallbackQueryHandler(wallet, pattern=r'^4$'),
             ],
             settings.STATES['food']: [
                 CallbackQueryHandler(food_reserve_confirm, pattern=r'^[0-6]$'),
                 CallbackQueryHandler(food_reserve_done, pattern=r'^(0|1)\:[0-9]$'),
+            ],
+            settings.STATES['wallet']: [
+                CallbackQueryHandler(wallet_deposit, pattern=r'^0$'),
+                CallbackQueryHandler(transaction_history, pattern=r'^1$'),
+                CallbackQueryHandler(wallet_deposit_done, pattern=r'^(?:20000|50000|100000)$'),
             ]
         },
         fallbacks=[CommandHandler('start', start)]
