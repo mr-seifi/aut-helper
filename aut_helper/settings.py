@@ -150,6 +150,7 @@ MESSAGES = {
     'menu': 'Menu!',
     'menu_food_main': 'منوی غذای این هفته\n',
     'menu_food_item': '{day}: *{food}*',
+    'menu_food_item_reserved': '{day}: *{food}* (**رزرو شده**)',
     'menu_food_reserve_confirm': 'آیا مطمئنی می‌خوای *{food}* رو با قیمت *{price}* تومان برای روز *{day}* رزرو کنی؟',
     'menu_food_reserve_done': 'غذا با موفقیت رزرو شد.',
     'not_enough_balance': 'موجودی کافی نیست.',
