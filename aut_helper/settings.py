@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'easy_food',
     'easy_book',
     'payment',
+    'monitoring',
 ]
 
 MIDDLEWARE = [
