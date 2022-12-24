@@ -1,10 +1,18 @@
 from easy_food.models import Food
+from easy_food.services import FoodCacheService
+from payment.services import PaymentService
 
 
 class FoodReservationService:
 
     @classmethod
     def reserve_food(cls, student_id: int, food, reserve_date):
+        payment_service = PaymentService()
+        food_cache_service = FoodCacheService()
+        food_price = food_cache_service.get_food_price(food=food)
+
+        payment_service.make_transaction(price=food_price,
+                                         student_id=student_id)
         return Food.objects.create(
             student_id=student_id,
             name=food,
