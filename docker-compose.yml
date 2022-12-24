@@ -1,15 +1,27 @@
 version: "3.8"
 
 services:
-  web:
+  redis:
+    image: redis:7.0.6-alpine
+    volumes:
+      - redis-data:/data/
+    restart: always
+
+  rabbitmq:
+    image: rabbitmq:3.11-alpine
+    command: rabbitmq-server
+
+  beat:
     build: .
+    command: celery -A aut_helper beat -l info
     volumes:
       - data:/app/data/
       - .:/app/
-    ports:
-      - "8000:8000"
     env_file:
       - ./.env
+    depends_on:
+      - rabbitmq
+
 
   migrate:
     build: .
@@ -20,6 +32,19 @@ services:
     env_file:
       - ./.env
 
+  web:
+    build: .
+    volumes:
+      - data:/app/data/
+      - .:/app/
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.env
+    depends_on:
+      - migrate
+      - redis
+
   bot:
     build: .
     command: python manage.py startbot
@@ -28,12 +53,22 @@ services:
       - .:/app/
     env_file:
       - ./.env
+    depends_on:
+      - migrate
+      - redis
 
-  redis:
-    image: redis:7.0.6-alpine
+  worker:
+    build: .
+    command: celery -A aut_helper worker -B -l info
     volumes:
-      - redis-data:/data/
-    restart: always
+      - data:/app/data/
+      - .:/app/
+    env_file:
+      - ./.env
+    depends_on:
+      - migrate
+      - redis
+      - beat
 
 volumes:
   data:

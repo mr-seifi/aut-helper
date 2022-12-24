@@ -131,6 +131,11 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Celery
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_BROKER_URL = 'rabbitmq'
 
 # Payments
 MINIMUM_STUDENT_BALANCE = -25000
@@ -144,7 +149,8 @@ MESSAGES = {
     'register_done': 'Congratulations!',
     'menu': 'Menu!',
     'menu_food_main': 'منوی غذای این هفته\n',
-    'menu_food_item': '{day}: *{food}*'
+    'menu_food_item': '{day}: *{food}*',
+    'menu_food_reserve_confirm': 'آیا مطمئنی می‌خوای *{food}* رو با قیمت *{price}* تومان برای روز *{day}* رزرو کنی؟'
 }
 
 # Telegram states

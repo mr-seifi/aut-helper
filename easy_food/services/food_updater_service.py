@@ -11,6 +11,14 @@ class FoodUpdaterService:
         return list(map(lambda x: x[1], sample(FoodChoices.choices, 1)))[0]
 
     @classmethod
+    def get_food_prices(cls, food: str) -> int:
+        return {
+            'برگر': 10000,
+            'پیتزا': 15000,
+            'مرغ': 16000,
+        }[food]
+
+    @classmethod
     def get_daily_available_foods(cls, date=timezone.now().date(), cache=True):
         cache_service = FoodCacheService()
 
