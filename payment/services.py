@@ -11,7 +11,7 @@ class PaymentService:
     @transaction.atomic
     def make_transaction(cls, price: int, student_id):
         student = Student.objects.get(student_id__exact=student_id)
-        if student.balance - price < settings.MINIMUM_STUDENT_BALANCE:
+        if int(student.balance) - int(price) < settings.MINIMUM_STUDENT_BALANCE:
             raise NotEnoughBalance
 
         student.balance -= price
