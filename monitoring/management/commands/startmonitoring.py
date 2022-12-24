@@ -18,5 +18,5 @@ class Command(BaseCommand):
             prometheus_service.send()
 
             time = timezone.now().strftime('%X')
-            self.stdout.write("%s -- Data fetched%s" % time)
+            self.stdout.write("%s -- Data fetched!" % time)
             sleep(3600)
