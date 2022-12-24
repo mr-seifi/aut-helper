@@ -194,6 +194,8 @@ async def food_reserve_confirm(update: Update, _: ContextTypes.DEFAULT_TYPE) -> 
         ]
     ]
     markup = InlineKeyboardMarkup(keyboard)
+    await query.answer()
+
     await query.edit_message_text(
         settings.MESSAGES['menu_food_reserve_confirm'].format(
             food=food,
@@ -219,6 +221,7 @@ async def food_reserve_done(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int
     _week_day = int(query.data.split(':')[-1])
     _reservation_date = weekday_to_date_from_now(_week_day)
     food = food_updater_service.get_a_food_cycle()[_week_day]
+    await query.answer()
 
     try:
         food_reservation_service.reserve_food(student_id=user_id,
