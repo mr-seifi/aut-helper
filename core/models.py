@@ -7,3 +7,4 @@ class Student(models.Model):
     phone_number = models.CharField(max_length=20)
     enter_year = models.IntegerField()
     balance = models.IntegerField(default=0)
+    created = models.DateTimeField(auto_now_add=True)
