@@ -89,6 +89,18 @@ services:
       - redis
       - beat
 
+  monitoring:
+    build: .
+    command: python manage.py startmonitoring
+    volumes:
+      - data:/app/data/
+      - .:/app/
+    env_file:
+      - ./.env
+    depends_on:
+      - migrate
+      - redis
+
 volumes:
   data:
   redis-data:
