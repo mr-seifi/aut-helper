@@ -10,7 +10,7 @@ class PaymentService:
     @classmethod
     @transaction.atomic
     def make_transaction(cls, price: int, student_id):
-        student = Student.objects.get(id=student_id)
+        student = Student.objects.get(student_id__exact=student_id)
         if student.balance - price < settings.MINIMUM_STUDENT_BALANCE:
             raise NotEnoughBalance
 
@@ -19,5 +19,5 @@ class PaymentService:
 
         return Transaction.objects.create(
             price=price,
-            student_id=student_id
+            student_id=student.id
         )

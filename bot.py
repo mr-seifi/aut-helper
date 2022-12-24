@@ -129,7 +129,12 @@ async def register_number(update: Update, context: ContextTypes.DEFAULT_TYPE) ->
 
 async def menu(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
     message = update.message
-    user_id = message.from_user.id
+    query = None
+    if not message:
+        query = update.callback_query
+        user_id = query.from_user.id
+    else:
+        user_id = message.from_user.id
 
     keyboard = [
         [
@@ -145,10 +150,16 @@ async def menu(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
         ]
     ]
     markup = InlineKeyboardMarkup(keyboard)
-    await message.reply_text(
-        settings.MESSAGES['menu'],
-        reply_markup=markup
-    )
+    if message:
+        await message.reply_text(
+            settings.MESSAGES['menu'],
+            reply_markup=markup
+        )
+    else:
+        await query.edit_message_text(
+            settings.MESSAGES['menu'],
+            reply_markup=markup
+        )
 
     return settings.STATES['menu']
 
