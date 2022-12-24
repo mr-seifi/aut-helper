@@ -16,7 +16,7 @@ class FoodReservationService:
         payment_service.make_transaction(price=food_price,
                                          student_id=student_id)
         return Food.objects.create(
-            student_student_id=student.id,
+            student_id=student.id,
             name=food,
             reserved_date=reserve_date
         )
