@@ -362,6 +362,24 @@ async def bookbank_reference(update: Update, _: ContextTypes.DEFAULT_TYPE) -> in
     return ConversationHandler.END
 
 
+async def library(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
+    query = update.callback_query
+    user_id = query.from_user.id
+
+    await query.answer()
+    keyboard = [
+        [
+            InlineKeyboardButton('جستجوی کتاب', switch_inline_query_current_chat='')
+        ]
+    ]
+    markup = InlineKeyboardMarkup(keyboard)
+    await query.message.reply_photo(
+        photo='asset/aut-helper.jpg',
+        caption=settings.MESSAGES['library'],
+        reply_markup=markup
+    )
+
+
 def main() -> None:
     application = Application.builder().token(os.getenv('BOT_TOKEN')).build()
 
