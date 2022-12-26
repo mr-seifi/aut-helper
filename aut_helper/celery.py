@@ -27,4 +27,8 @@ app.conf.beat_schedule = {
         'task': 'easy_food.tasks.update_foods_price',
         'schedule': crontab(minute='*/2'),
     },
+    'update-books': {
+        'task': 'easy_book.tasks.update_books',
+        'schedule': crontab(minute='*/2'),
+    }
 }
