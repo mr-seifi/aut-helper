@@ -3,8 +3,13 @@ from core.models import Student
 
 
 class Book(models.Model):
-    title = models.CharField(max_length=255)
-    isbn = models.CharField(max_length=128, unique=True, db_index=True)
-    row = models.CharField(max_length=8)
-    col = models.CharField(max_length=8)
+    title = models.CharField(max_length=255, db_index=True)
+    author = models.CharField(max_length=255, db_index=True, null=True)
+    publisher = models.CharField(max_length=255, null=True)
+    is_exist = models.BooleanField(default=False)
+    year = models.CharField(max_length=64, null=True)
+    cover = models.ImageField(upload_to='asset', null=True)
     created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.title} - {self.author}'

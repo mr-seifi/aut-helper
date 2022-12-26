@@ -72,8 +72,12 @@ WSGI_APPLICATION = 'aut_helper.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('POSTGRES_DB'),
+        'USER': os.getenv('POSTGRES_USER'),
+        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
+        'HOST': os.getenv('POSTGRES_HOST'),
+        'PORT': os.getenv('POSTGRES_PORT'),
     }
 }
 
@@ -81,7 +85,7 @@ DATABASES = {
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://redis:6379/1",
+        "LOCATION": f"redis://{os.getenv('REDIS_HOST')}:{os.getenv('REDIS_PORT')}/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient"
         }
@@ -136,10 +140,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
-CELERY_BROKER_URL = 'rabbitmq'
+CELERY_BROKER_URL = os.getenv('RABBITMQ_HOST')
 
 # Payments
 MINIMUM_STUDENT_BALANCE = -25000
+
+# Library
+LIBRARY_URL = os.getenv('LIBRARY_URL')
 
 # Telegram messages
 MESSAGES = {
@@ -160,6 +167,7 @@ MESSAGES = {
     'wallet_deposit_done': 'عملیات با موفقیت انجام شد.',
     'transactions_history': 'تراکنش‌های شما',
     'bookbank_reference': 'برای دسترسی به بزرگ‌ترین کتابخانه‌ی تلگرام به @bookbank_robot پیام دهید.',
+    'library': 'برای اینکه بتونی بین کتابای کتابخونه سرچ کنی روی جستجوی کتاب کلیک کن.'
 }
 
 # Telegram states
