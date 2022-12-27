@@ -28,6 +28,7 @@ services:
       - ./.env
     depends_on:
       - rabbitmq
+      - db
 
 
   migrate:
@@ -38,6 +39,8 @@ services:
       - .:/app/
     env_file:
       - ./.env
+    depends_on:
+      - db
 
   prometheus:
     image: prom/prometheus:latest
@@ -70,6 +73,7 @@ services:
     depends_on:
       - migrate
       - redis
+      - db
 
   bot:
     build: .
@@ -82,6 +86,7 @@ services:
     depends_on:
       - migrate
       - redis
+      - db
 
   worker:
     build: .
@@ -95,6 +100,7 @@ services:
       - migrate
       - redis
       - beat
+      - db
 
   monitoring:
     build: .
@@ -107,6 +113,7 @@ services:
     depends_on:
       - migrate
       - redis
+      - db
 
 volumes:
   data:
