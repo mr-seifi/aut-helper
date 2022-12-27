@@ -381,7 +381,7 @@ async def library(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
         reply_markup=markup
     )
 
-    return settings.STATES['library']
+    return settings.STATES['menu']
 
 
 async def library_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
@@ -402,6 +402,7 @@ async def library_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
                         f'{book.author}\n{book.publisher}'
         ) for book in book_service.search_book(query)
     ]
+    print('result', results)
     response = await update.inline_query.answer(results)
     return response
 
