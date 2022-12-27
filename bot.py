@@ -385,7 +385,7 @@ async def library(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
 
 
 async def library_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
-    query = update.callback_query
+    query = update.inline_query
     user_id = query.from_user.id
 
     if query == "":
