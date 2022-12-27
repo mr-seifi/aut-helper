@@ -397,7 +397,7 @@ async def library_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
             id=str(uuid4()),
             title=book.title,
             input_message_content=InputTextMessageContent(f'/download {book.uid}'),
-            # thumb_url=book.cover.url,
+            thumb_url=book.cover.path,
             description=f'{book.year + "-" if book.year else ""}'
                         f'{book.author}\n{book.publisher}'
         ) for book in book_service.search_book(query)
