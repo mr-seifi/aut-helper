@@ -397,7 +397,8 @@ async def library_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
             id=str(uuid4()),
             title=book.title,
             input_message_content=InputTextMessageContent(f'/download {book.uid}'),
-            thumb_url=f'http://{os.getenv("DOMAIN")}/cover/{book.cover.url.split("?")[0].split("/")[-1]}',
+            thumb_url=f'http://{os.getenv("DOMAIN")}/cover/{book.cover.url.split("?")[0].split("/")[-1]}'
+            if book.cover else '',
             description=f'{book.year + "-" if book.year else ""}'
                         f'{book.author}\n{book.publisher}'
         ) for book in book_service.search_book(query)
@@ -405,7 +406,7 @@ async def library_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
     for book in book_service.search_book(query):
         logger.info(book.cover.url.replace(f"{os.getenv('MINIO_HOST')}:{os.getenv('MINIO_PORT')}",
                                            os.getenv('DOMAIN')).split('?')[0]
-            if book.cover else '')
+                    if book.cover else '')
 
     response = await update.inline_query.answer(results)
     return response
