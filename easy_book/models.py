@@ -5,7 +5,7 @@ from uuid import uuid4
 
 class Book(models.Model):
     title = models.CharField(max_length=255, db_index=True)
-    uid = models.UUIDField(default=uuid4)
+    uid = models.UUIDField(default=uuid4, db_index=True)
     author = models.CharField(max_length=255, db_index=True, null=True)
     publisher = models.CharField(max_length=255, null=True)
     is_exist = models.BooleanField(default=False)

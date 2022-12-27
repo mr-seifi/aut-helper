@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 from _helpers import weekday_to_persian_weekday, weekday_to_date_from_now, split, NotEnoughBalance
 from easy_food.services import FoodUpdaterService, FoodCacheService, FoodReservationService
 from easy_book.services import BookService
+from easy_book.models import Book
 from payment.services import PaymentService
 from payment.enums import TransactionChoices
 
@@ -396,7 +397,7 @@ async def library_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
         InlineQueryResultArticle(
             id=str(uuid4()),
             title=book.title,
-            input_message_content=InputTextMessageContent(f'/download {book.uid}'),
+            input_message_content=InputTextMessageContent(f'/lookup {book.uid}'),
             thumb_url=f'http://{os.getenv("DOMAIN")}/cover/{book.cover.url.split("?")[0].split("/")[-1]}'
             if book.cover else '',
             description=f'{book.year + "-" if book.year else ""}'
@@ -410,6 +411,36 @@ async def library_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
 
     response = await update.inline_query.answer(results)
     return response
+
+
+async def lookup(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+    user_id = message.from_user.id
+
+    try:
+        uid = context.args[0]
+    except IndexError:
+        return
+    except TypeError:
+        return
+    except Exception:
+        return
+
+    book = Book.objects.filter(uid__exact=uid).first()
+    if book.cover:
+        await message.reply_photo(
+            photo=f'http://{os.getenv("DOMAIN")}/cover/{book.cover.url.split("?")[0].split("/")[-1]}',
+            caption=settings.MESSAGES['book'].format(title=book.title,
+                                                     status=('ناموجود', 'موجود')[book.is_exist]),
+            parse_mode=ParseMode.MARKDOWN
+        )
+        return
+
+    await message.reply_text(
+        settings.MESSAGES['book'].format(title=book.title,
+                                         status=('ناموجود', 'موجود')[book.is_exist]),
+        parse_mode=ParseMode.MARKDOWN
+    )
 
 
 def main() -> None:
@@ -448,6 +479,9 @@ def main() -> None:
         },
         fallbacks=[CommandHandler('start', start)]
     ))
+    application.add_handler(
+        CommandHandler('lookup', lookup)
+    )
     application.add_handler(
         InlineQueryHandler(library_search)
     )
