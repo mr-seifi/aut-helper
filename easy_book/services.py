@@ -76,11 +76,13 @@ class BookService:
             publisher=book_series.publisher,
             year=book_series.year,
             is_exist=book_series.status,
-            cover=book_series.cover.split('/')[-1] or None
+            cover=book_series.cover.split('/')[-1] if book_series.cover else ''
         )
 
         b.save()
-        b.cover.save(name=book_series.cover.split('/')[-1], content=open(book_series.cover, 'rb'))
+        if book_series.cover:
+            b.cover.save(name=book_series.cover.split('/')[-1], content=open(book_series.cover, 'rb'))
+        print(b.cover.url)
         return b
 
     @classmethod
