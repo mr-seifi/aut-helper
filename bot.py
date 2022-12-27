@@ -397,8 +397,7 @@ async def library_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
             id=str(uuid4()),
             title=book.title,
             input_message_content=InputTextMessageContent(f'/download {book.uid}'),
-            thumb_url=book.cover.url.replace(os.getenv('MINIO_HOST'), os.getenv('SERVER_IP')).split('?')[0]
-            if book.cover else '',
+            thumb_url='https://vista.ir/mag/i/b/68w81.jpg',
             description=f'{book.year + "-" if book.year else ""}'
                         f'{book.author}\n{book.publisher}'
         ) for book in book_service.search_book(query)
