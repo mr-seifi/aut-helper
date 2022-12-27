@@ -2,6 +2,7 @@
 
 import os
 import logging
+from uuid import uuid4
 from telegram import __version__ as TG_VER
 from core.models import Student
 from core.services import CoreCacheService
@@ -9,6 +10,7 @@ from django.conf import settings
 from dotenv import load_dotenv
 from _helpers import weekday_to_persian_weekday, weekday_to_date_from_now, split, NotEnoughBalance
 from easy_food.services import FoodUpdaterService, FoodCacheService, FoodReservationService
+from easy_book.services import BookService
 from payment.services import PaymentService
 from payment.enums import TransactionChoices
 
@@ -25,12 +27,11 @@ if __version_info__ < (20, 0, 0, "alpha", 5):
     )
 
 from telegram import (
-    ReplyKeyboardMarkup,
-    ReplyKeyboardRemove,
     Update,
     InlineKeyboardMarkup,
     InlineKeyboardButton,
-
+    InlineQueryResultArticle,
+    InputTextMessageContent,
 )
 
 from telegram.ext import (
@@ -41,6 +42,7 @@ from telegram.ext import (
     MessageHandler,
     filters,
     CallbackQueryHandler,
+    InlineQueryHandler,
 )
 
 from telegram.constants import ParseMode
@@ -379,6 +381,30 @@ async def library(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
         reply_markup=markup
     )
 
+    return settings.STATES['library']
+
+
+async def library_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+
+    if query == "":
+        return
+
+    book_service = BookService()
+    results = [
+        InlineQueryResultArticle(
+            id=str(uuid4()),
+            title=book.title,
+            input_message_content=InputTextMessageContent(f'/download {book.uid}'),
+            thumb_url=book.cover.url,
+            description=f'{book.year + "-" if book.year else ""}'
+                        f'{book.author}\n{book.publisher}'
+        ) for book in book_service.search_book(query)
+    ]
+    response = await update.inline_query.answer(results)
+    return response
+
 
 def main() -> None:
     application = Application.builder().token(os.getenv('BOT_TOKEN')).build()
@@ -400,6 +426,7 @@ def main() -> None:
             ],
             settings.STATES['menu']: [
                 CallbackQueryHandler(food_reserve, pattern=r'^0$'),
+                CallbackQueryHandler(library, pattern=r'^1$'),
                 CallbackQueryHandler(bookbank_reference, pattern=r'^2$'),
                 CallbackQueryHandler(wallet, pattern=r'^4$'),
             ],
@@ -415,5 +442,7 @@ def main() -> None:
         },
         fallbacks=[CommandHandler('start', start)]
     ))
-
+    application.add_handler(
+        InlineQueryHandler(library_search)
+    )
     application.run_polling()
