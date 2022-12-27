@@ -82,7 +82,6 @@ class BookService:
         b.save()
         if book_series.cover:
             b.cover.save(name=book_series.cover.split('/')[-1], content=open(book_series.cover, 'rb'))
-        print(b.cover.url)
         return b
 
     @classmethod
