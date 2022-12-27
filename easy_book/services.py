@@ -46,7 +46,7 @@ class BookService:
 
         for it, row in df.iterrows():
             if str(it) in assets.keys():
-                df.loc[it, 'cover'] = f'asset/{it}.{assets[str(it)]}'
+                df.loc[it, 'cover'] = f'easy_book/asset/{it}.{assets[str(it)]}'
 
     @classmethod
     def is_exist(cls, book_series: pd.Series) -> bool:
@@ -70,14 +70,18 @@ class BookService:
 
     @classmethod
     def create_book(cls, book_series: pd.Series):
-        return Book.objects.create(
+        b = Book(
             title=book_series.title,
             author=book_series.author,
             publisher=book_series.publisher,
             year=book_series.year,
             is_exist=book_series.status,
-            cover=book_series.cover or None
+            cover=book_series.cover.split('/')[-1] or None
         )
+
+        b.save()
+        b.cover.save(name=book_series.cover.split('/')[-1], content=open(book_series.cover, 'rb'))
+        return b
 
     @classmethod
     def search_book(cls, query, limit=8):

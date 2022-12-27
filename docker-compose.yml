@@ -14,6 +14,17 @@ services:
       - redis-data:/data/
     restart: always
 
+  minio:
+    image: minio/minio
+    volumes:
+      - minio-data:/minio_files
+    env_file:
+      - ./.env
+    command: 'minio server /minio_files --console-address ":9001"'
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
   rabbitmq:
     image: rabbitmq:3.11-alpine
     command: rabbitmq-server
@@ -118,6 +129,7 @@ services:
 volumes:
   data:
   postgres-data:
+  minio-data:
   redis-data:
   prometheus-data:
   grafana-data:
