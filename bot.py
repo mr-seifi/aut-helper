@@ -397,7 +397,7 @@ async def library_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
             id=str(uuid4()),
             title=book.title,
             input_message_content=InputTextMessageContent(f'/download {book.uid}'),
-            thumb_url='https://vista.ir/mag/i/b/68w81.jpg',
+            thumb_url='http://deltabook.ir/wp-content/uploads/2021/05/%DA%A9%D8%AA%D8%A7%D8%A8-%D9%85%D8%A8%D8%A7%D9%86%DB%8C-%D8%A2%D9%86%D8%A7%D9%84%DB%8C%D8%B2-%D8%B1%DB%8C%D8%A7%D8%B6%DB%8C-%D8%A7%D8%B1%D8%B4%D8%AF-%D9%BE%D9%88%D8%B1%D8%A7%D9%86-%D9%BE%DA%98%D9%88%D9%87%D8%B4-%D8%A7%D8%AB%D8%B1-%D8%B1%D8%B6%D9%88%D8%A7%D9%86%DB%8C.jpg',
             description=f'{book.year + "-" if book.year else ""}'
                         f'{book.author}\n{book.publisher}'
         ) for book in book_service.search_book(query)
