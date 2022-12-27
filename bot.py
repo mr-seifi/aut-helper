@@ -403,6 +403,9 @@ async def library_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
                         f'{book.author}\n{book.publisher}'
         ) for book in book_service.search_book(query)
     ]
+    for book in book_service.search_book(query):
+        print(book.cover.url.replace(os.getenv('MINIO_HOST'), os.getenv('SERVER_IP')).split('?')[0]
+            if book.cover else '')
 
     response = await update.inline_query.answer(results)
     return response
