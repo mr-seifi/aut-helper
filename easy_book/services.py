@@ -1,6 +1,7 @@
 import os
 
 from django.conf import settings
+from django.db.models import Q
 import requests
 import pandas as pd
 from .models import Book
@@ -77,3 +78,9 @@ class BookService:
             is_exist=book_series.status,
             cover=book_series.cover or None
         )
+
+    @classmethod
+    def search_book(cls, query, limit=8):
+        return Book.objects.filter(Q(title__icontains=query) |
+                                   Q(author__icontains=query) |
+                                   Q(publisher__icontains=query)).exclude(title__exact='')[:limit]

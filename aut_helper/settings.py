@@ -179,6 +179,7 @@ STATES = {
     'menu': 4,
     'food': 5,
     'wallet': 6,
+    'library': 7,
 }
 
 
