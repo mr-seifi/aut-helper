@@ -385,8 +385,8 @@ async def library(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
 
 
 async def library_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
-    query = update.inline_query
-    user_id = query.from_user.id
+    query = update.inline_query.query
+    user_id = update.inline_query.from_user.id
 
     if query == "":
         return
@@ -402,7 +402,7 @@ async def library_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
                         f'{book.author}\n{book.publisher}'
         ) for book in book_service.search_book(query)
     ]
-    print('result', results)
+
     response = await update.inline_query.answer(results)
     return response
 
