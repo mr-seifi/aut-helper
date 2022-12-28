@@ -16,7 +16,10 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(os.getenv('DEBUG'))
 
-ALLOWED_HOSTS = []
+# Server's ip
+SERVER_IP = os.getenv('SERVER_IP')
+
+ALLOWED_HOSTS = [SERVER_IP]
 
 
 # Application definition
