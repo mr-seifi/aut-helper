@@ -19,7 +19,7 @@ class Course(models.Model):
     days = models.ManyToManyField(Day)
     start_time = models.TimeField()
     end_time = models.TimeField()
-    # students = models.ManyToManyField(Student,blank=True)
+    students = models.ManyToManyField(Student,blank=True)
     
     def __str__(self) -> str:
         return f'{self.name} - {self.lecturer} - {self.days} - {self.start_time} - {self.end_time}'
