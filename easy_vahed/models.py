@@ -4,6 +4,9 @@ from core.models import Student
 class Day(models.Model):
     day = models.CharField(max_length=20)
     
+    def __str__(self) -> str:
+        return self.day
+    
 class Course(models.Model):
     name = models.CharField(max_length=100)
     unit = models.IntegerField()
@@ -14,13 +17,13 @@ class Course(models.Model):
     def __str__(self) -> str:
         return f'{self.name} - {self.lecturer}'
     
-class ClassTime(models.Model):
-    day = models.ManyToManyField(Day,blank=False)
+class Time(models.Model):
+    day = models.ManyToManyField(Day,blank=True)
     start_time = models.FloatField()
     end_time = models.FloatField()
     course = models.ForeignKey(Course,on_delete=models.CASCADE)
-
-class ExamTime(ClassTime):
-    date = models.DateField()
+    
+    def __str__(self) -> str:
+        return f'{self.day} -> {self.start_time} - {self.end_time}'
     
     
