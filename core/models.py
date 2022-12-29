@@ -8,3 +8,6 @@ class Student(models.Model):
     enter_year = models.IntegerField()
     balance = models.IntegerField(default=0)
     gpa = models.FloatField(default=0)
+    
+    def __str__(self) -> str:
+        return self.student_id
