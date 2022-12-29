@@ -19,6 +19,9 @@ class Course(models.Model):
     days = models.ManyToManyField(Day)
     start_time = models.TimeField()
     end_time = models.TimeField()
+    exam_date = models.DateField()
+    exam_start = models.TimeField()
+    exam_end = models.TimeField()
     students = models.ManyToManyField(Student,blank=True)
     
     def __str__(self) -> str:
