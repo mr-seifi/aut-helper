@@ -10,8 +10,8 @@ from django.conf import settings
 from dotenv import load_dotenv
 from _helpers import weekday_to_persian_weekday, weekday_to_date_from_now, split, NotEnoughBalance
 from easy_food.services import FoodUpdaterService, FoodCacheService, FoodReservationService
-from easy_book.services import BookService
-from easy_book.models import LibraryBook
+from easy_book.services import BookService, OnlineBookService
+from easy_book.models import LibraryBook, OnlineBook
 from payment.services import PaymentService
 from payment.enums import TransactionChoices
 
@@ -413,6 +413,29 @@ async def library_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
     return response
 
 
+async def search(update: Update, _: ContextTypes.DEFAULT_TYPE):
+    query = update.inline_query.query
+    user = update.inline_query.from_user
+
+    if query == "":
+        return
+
+    book_service = OnlineBookService()
+    results = [
+        InlineQueryResultArticle(
+            id=str(uuid4()),
+            title=book.title,
+            input_message_content=InputTextMessageContent(f'/download {book.md5}'),
+            thumb_url=book.cover_url,
+            description=f'{book.year + "-" if book.year else ""}{book.extension + "-" if book.extension else ""}'
+                        f'{(book.filesize // 1000000) + 1}MB\n'
+                        f'{book.authors}\n{book.publisher}\n{book.description}'
+        ) for book in book_service.search_book(query)
+    ]
+    response = await update.inline_query.answer(results)
+    return response
+
+
 async def lookup(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.message
     user_id = message.from_user.id
@@ -483,6 +506,6 @@ def main() -> None:
         CommandHandler('lookup', lookup)
     )
     application.add_handler(
-        InlineQueryHandler(library_search)
+        InlineQueryHandler(search)
     )
     application.run_polling()
