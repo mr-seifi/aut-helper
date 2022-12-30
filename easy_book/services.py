@@ -4,7 +4,7 @@ from django.conf import settings
 from django.db.models import Q
 import requests
 import pandas as pd
-from .models import LibraryBook
+from .models import LibraryBook, OnlineBook
 
 
 class BookService:
@@ -89,3 +89,10 @@ class BookService:
         return LibraryBook.objects.filter(Q(title__icontains=query) |
                                           Q(author__icontains=query) |
                                           Q(publisher__icontains=query)).exclude(title__exact='')[:limit]
+
+
+class OnlineBookService:
+
+    @classmethod
+    def search_book(cls, query, limit=8):
+        return OnlineBook.objects.filter(document__exact=query).exclude(title__exact='').order_by('document')[:limit]
