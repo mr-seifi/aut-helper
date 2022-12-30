@@ -4,7 +4,7 @@ from django.conf import settings
 from django.db.models import Q
 import requests
 import pandas as pd
-from .models import Book
+from .models import LibraryBook
 
 
 class BookService:
@@ -50,7 +50,7 @@ class BookService:
 
     @classmethod
     def is_exist(cls, book_series: pd.Series) -> bool:
-        return Book.objects.filter(
+        return LibraryBook.objects.filter(
             title__exact=book_series.title,
             author__exact=book_series.author,
             publisher__exact=book_series.publisher,
@@ -59,7 +59,7 @@ class BookService:
 
     @classmethod
     def update_status(cls, book_series: pd.Series):
-        Book.objects.filter(
+        LibraryBook.objects.filter(
             title__exact=book_series.title,
             author__exact=book_series.author,
             publisher__exact=book_series.publisher,
@@ -70,7 +70,7 @@ class BookService:
 
     @classmethod
     def create_book(cls, book_series: pd.Series):
-        b = Book(
+        b = LibraryBook(
             title=book_series.title,
             author=book_series.author,
             publisher=book_series.publisher,
@@ -86,6 +86,6 @@ class BookService:
 
     @classmethod
     def search_book(cls, query, limit=8):
-        return Book.objects.filter(Q(title__icontains=query) |
-                                   Q(author__icontains=query) |
-                                   Q(publisher__icontains=query)).exclude(title__exact='')[:limit]
+        return LibraryBook.objects.filter(Q(title__icontains=query) |
+                                          Q(author__icontains=query) |
+                                          Q(publisher__icontains=query)).exclude(title__exact='')[:limit]
