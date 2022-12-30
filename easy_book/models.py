@@ -3,6 +3,7 @@ from core.models import Student
 from uuid import uuid4
 from django.contrib.postgres.search import SearchVectorField
 from django.contrib.postgres.indexes import GinIndex
+from django.utils.text import slugify
 
 
 class BaseBook(models.Model):
@@ -73,3 +74,29 @@ class OnlineBook(models.Model):
             models.Index(fields=['md5']),
             GinIndex(fields=['document']),
         ]
+
+    def _do_insert(self, manager, using, fields, returning_fields, raw):
+        return super(OnlineBook, self)._do_insert(manager,
+                                            using,
+                                            [f for f in fields if f.attname != 'document'],
+                                            returning_fields,
+                                            raw)
+
+    def _do_update(self, base_qs, using, pk_val, values, update_fields, forced_update):
+        return super(OnlineBook, self)._do_update(base_qs,
+                                            using,
+                                            pk_val,
+                                            [value for value in values if value[0].name != 'document'],
+                                            update_fields,
+                                            forced_update)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(f'{self.title} {self.publisher} {self.year}')
+        if self.cover:
+            cover_extension = self.cover.name.split('.')[-1]
+            self.cover.name = f'{self.slug}.{cover_extension}'
+        if self.topic:
+            self.topic = slugify(self.topic.replace('\\', ' '))
+        self.md5 = self.md5.lower()
+        super(OnlineBook, self).save(*args, **kwargs)
