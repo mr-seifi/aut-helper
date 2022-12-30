@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 from _helpers import weekday_to_persian_weekday, weekday_to_date_from_now, split, NotEnoughBalance
 from easy_food.services import FoodUpdaterService, FoodCacheService, FoodReservationService
 from easy_book.services import BookService
-from easy_book.models import Book
+from easy_book.models import LibraryBook
 from payment.services import PaymentService
 from payment.enums import TransactionChoices
 
@@ -426,7 +426,7 @@ async def lookup(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception:
         return
 
-    book = Book.objects.filter(uid__exact=uid).first()
+    book = LibraryBook.objects.filter(uid__exact=uid).first()
     if book.cover:
         await message.reply_photo(
             photo=f'http://{os.getenv("DOMAIN")}/cover/{book.cover.url.split("?")[0].split("/")[-1]}',
