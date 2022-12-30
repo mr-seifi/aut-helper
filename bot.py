@@ -401,7 +401,7 @@ async def library_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
             thumb_url=f'http://{os.getenv("DOMAIN")}/cover/{book.cover.url.split("?")[0].split("/")[-1]}'
             if book.cover else '',
             description=f'{book.year + "-" if book.year else ""}'
-                        f'{book.author}\n{book.publisher}'
+                        f'{book.authors}\n{book.publisher}'
         ) for book in book_service.search_book(query)
     ]
     for book in book_service.search_book(query):
