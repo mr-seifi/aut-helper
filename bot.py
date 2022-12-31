@@ -409,13 +409,7 @@ async def library(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
     return settings.STATES['menu']
 
 
-async def library_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
-    query = update.inline_query.query
-    user_id = update.inline_query.from_user.id
-
-    if query == "":
-        return
-
+async def _search_result(query):
     book_service = BookService()
     results = [
         InlineQueryResultArticle(
@@ -428,6 +422,19 @@ async def library_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
                         f'{book.authors}\n{book.publisher}'
         ) for book in book_service.search_book(query)
     ]
+
+    return results
+
+
+async def library_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
+    query = update.inline_query.query
+    user_id = update.inline_query.from_user.id
+
+    if query == "":
+        return
+
+    book_service = BookService()
+    results = await _search_result(query)
     for book in book_service.search_book(query):
         logger.info(book.cover.url.replace(f"{os.getenv('MINIO_HOST')}:{os.getenv('MINIO_PORT')}",
                                            os.getenv('DOMAIN')).split('?')[0]
@@ -446,7 +453,10 @@ async def bookbank_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
 
     if 'library' in query:
         query = query.replace('library', '')
-        return await library_search(update, _)
+        results = await _search_result(query)
+
+        response = await update.inline_query.answer(results)
+        return response
 
     book_service = OnlineBookService()
     results = [
@@ -493,6 +503,21 @@ async def lookup(update: Update, context: ContextTypes.DEFAULT_TYPE):
         parse_mode=ParseMode.MARKDOWN
     )
 
+
+async def download(update: Update, _: ContextTypes.DEFAULT_TYPE):
+    try:
+        book = Book.objects.get(md5=md5)
+    except Book.DoesNotExist:
+        return
+
+    if book.file:
+        message_id = book.file
+        await InternalService.send_info(context,
+                                        f'[{user.fullname}](tg://user?id={user.user_id}) is getting {book.title}'
+                                        f' from forwarding.')
+        await InternalService.forward_file(context=context,
+                                           file_id=message_id,
+                                           to=user_id)
 
 def main() -> None:
     application = Application.builder().token(os.getenv('BOT_TOKEN')).build()
