@@ -518,20 +518,27 @@ async def lookup(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-async def download(update: Update, _: ContextTypes.DEFAULT_TYPE):
+async def download(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+    user_id = message.from_user.id
+
     try:
-        book = Book.objects.get(md5=md5)
-    except Book.DoesNotExist:
+        md5 = context.args[0]
+    except IndexError:
+        return
+    except TypeError:
         return
 
-    if book.file:
-        message_id = book.file
-        await InternalService.send_info(context,
-                                        f'[{user.fullname}](tg://user?id={user.user_id}) is getting {book.title}'
-                                        f' from forwarding.')
-        await InternalService.forward_file(context=context,
-                                           file_id=message_id,
-                                           to=user_id)
+    try:
+        book = OnlineBook.objects.get(md5=md5)
+    except OnlineBook.DoesNotExist:
+        return
+
+    message_id = book.file
+    response = await context.bot.forward_message(chat_id=user_id,
+                                                 from_chat_id='-1001590420573',
+                                                 message_id=message_id)
+    return response
 
 
 def main() -> None:
@@ -575,6 +582,9 @@ def main() -> None:
     ))
     application.add_handler(
         CommandHandler('lookup', lookup)
+    )
+    application.add_handler(
+        CommandHandler('download', download)
     )
     application.add_handler(
         InlineQueryHandler(bookbank_search)
