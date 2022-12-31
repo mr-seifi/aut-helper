@@ -147,11 +147,8 @@ async def menu(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
         ],
         [
             InlineKeyboardButton('بوک‌بنک', callback_data=2),
-            InlineKeyboardButton('انتخاب واحد', callback_data=3),
-        ],
-        [
             InlineKeyboardButton('کیف پول', callback_data=4)
-        ]
+        ],
     ]
     markup = InlineKeyboardMarkup(keyboard)
     if message:
@@ -357,9 +354,17 @@ async def bookbank_reference(update: Update, _: ContextTypes.DEFAULT_TYPE) -> in
     user_id = query.from_user.id
 
     await query.answer()
+    keyboard = [
+        [
+            InlineKeyboardButton('جستجوی کتاب', switch_inline_query_current_chat='')
+        ]
+    ]
+    markup = InlineKeyboardMarkup(keyboard)
     await query.message.reply_photo(
         photo='asset/book-bank.jpg',
-        caption=settings.MESSAGES['bookbank_reference']
+        caption=settings.MESSAGES['bookbank_reference'],
+        parse_mode=ParseMode.MARKDOWN,
+        reply_markup=markup
     )
 
     return ConversationHandler.END
@@ -413,7 +418,7 @@ async def library_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
     return response
 
 
-async def search(update: Update, _: ContextTypes.DEFAULT_TYPE):
+async def bookbank_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
     query = update.inline_query.query
     user = update.inline_query.from_user
 
@@ -506,6 +511,6 @@ def main() -> None:
         CommandHandler('lookup', lookup)
     )
     application.add_handler(
-        InlineQueryHandler(search)
+        InlineQueryHandler(bookbank_search)
     )
     application.run_polling()
