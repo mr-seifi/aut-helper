@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'easy_book',
     'payment',
     'monitoring',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -205,4 +206,50 @@ STATES = {
 }
 
 
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'basic': {
+            'type': 'basic'
+        }
+    },
+}
 
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Uniar Bot API',
+    'DESCRIPTION': 'all api that provided for uniarbot',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # OTHER SETTINGS
+}
+
+# Swagger
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Shopino",
+    "DESCRIPTION": "its list of all api's in shopino",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SWAGGER_UI_DIST": "SIDECAR",
+    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
+    "REDOC_DIST": "SIDECAR",
+    "SCHEMA_PATH_PREFIX": r"/api/v[0-9]",
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAdminUser"],
+}
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend",
+    ],
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+        "_helpers.renderers.LightBrowsableAPIRenderer",
+    ],
+}
+
+INSTALLED_APPS.extend(["drf_spectacular", "drf_spectacular_sidecar"])
+REST_FRAMEWORK["DEFAULT_SCHEMA_CLASS"] = "drf_spectacular.openapi.AutoSchema"
