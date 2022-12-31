@@ -1,12 +1,12 @@
 from django.db import models
 from core.models import Student
-from day_mapping import persian_day_mapping
+from _helpers import weekday_to_persian_weekday
 
 class Day(models.Model):
     day = models.IntegerField()
     
     def map_day(self):
-        return persian_day_mapping[self.day]
+        return weekday_to_persian_weekday[self.day]
     
     def __str__(self) -> str:
         return self.map_day()
