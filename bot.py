@@ -496,12 +496,19 @@ async def lookup(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     book = LibraryBook.objects.filter(uid__exact=uid).first()
     if book.cover:
-        await message.reply_photo(
-            photo=f'http://{os.getenv("DOMAIN")}/cover/{book.cover.url.split("?")[0].split("/")[-1]}',
-            caption=settings.MESSAGES['book'].format(title=book.title,
-                                                     status=('ناموجود', 'موجود')[book.is_exist]),
-            parse_mode=ParseMode.MARKDOWN
-        )
+        try:
+            await message.reply_photo(
+                photo=f'http://{os.getenv("DOMAIN")}/cover/{book.cover.url.split("?")[0].split("/")[-1]}',
+                caption=settings.MESSAGES['book'].format(title=book.title,
+                                                         status=('ناموجود', 'موجود')[book.is_exist]),
+                parse_mode=ParseMode.MARKDOWN
+            )
+        except Exception:
+            await message.reply_text(
+                settings.MESSAGES['book'].format(title=book.title,
+                                                 status=('ناموجود', 'موجود')[book.is_exist]),
+                parse_mode=ParseMode.MARKDOWN
+            )
         return
 
     await message.reply_text(
@@ -525,6 +532,7 @@ async def download(update: Update, _: ContextTypes.DEFAULT_TYPE):
         await InternalService.forward_file(context=context,
                                            file_id=message_id,
                                            to=user_id)
+
 
 def main() -> None:
     application = Application.builder().token(os.getenv('BOT_TOKEN')).build()
