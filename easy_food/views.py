@@ -4,7 +4,7 @@ from easy_food.models import Food
 from easy_food.serializer import EasyFoodSerializer
 
 
-class ShopAdminViewSet(ModelViewSet):
+class EasyFoodViewSet(ModelViewSet):
     serializer_class = EasyFoodSerializer
     queryset = Food.objects.all()
 
