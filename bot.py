@@ -186,6 +186,11 @@ async def food_reserve(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
         InlineKeyboardButton(weekday_to_persian_weekday(weekday), callback_data=weekday)
         for weekday in food_updater_service.get_a_food_cycle().keys() if weekday not in _reserved_weekdays
     ], 4)
+    keyboard += [
+        [
+            InlineKeyboardButton('منوی اصلی', callback_data=-1)
+        ]
+    ]
     markup = InlineKeyboardMarkup(keyboard)
     await query.edit_message_text(
         f"{settings.MESSAGES['menu_food_main']}\n"
@@ -275,6 +280,9 @@ async def wallet(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
         ],
         [
             InlineKeyboardButton('تراکنش‌ها', callback_data=1)
+        ],
+        [
+            InlineKeyboardButton('منوی اصلی', callback_data=-1)
         ]
     ]
     markup = InlineKeyboardMarkup(keyboard)
@@ -301,6 +309,9 @@ async def wallet_deposit(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
         ],
         [
             InlineKeyboardButton('100,000 تومان', callback_data=100000)
+        ],
+        [
+            InlineKeyboardButton('منوی اصلی', callback_data=-1)
         ]
     ]
     markup = InlineKeyboardMarkup(keyboard)
@@ -360,6 +371,9 @@ async def bookbank_reference(update: Update, _: ContextTypes.DEFAULT_TYPE) -> in
     keyboard = [
         [
             InlineKeyboardButton('جستجوی کتاب', switch_inline_query_current_chat='')
+        ],
+        [
+            InlineKeyboardButton('منوی اصلی', callback_data=-1)
         ]
     ]
     markup = InlineKeyboardMarkup(keyboard)
@@ -370,7 +384,7 @@ async def bookbank_reference(update: Update, _: ContextTypes.DEFAULT_TYPE) -> in
         reply_markup=markup
     )
 
-    return ConversationHandler.END
+    return settings.STATES['menu']
 
 
 async def library(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
@@ -393,7 +407,7 @@ async def library(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
         reply_markup=markup
     )
 
-    return settings.STATES['library']
+    return settings.STATES['menu']
 
 
 async def library_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
@@ -507,10 +521,12 @@ def main() -> None:
                 CallbackQueryHandler(wallet, pattern=r'^4$'),
             ],
             settings.STATES['food']: [
+                CallbackQueryHandler(menu, pattern=r'^-1$'),
                 CallbackQueryHandler(food_reserve_confirm, pattern=r'^[0-6]$'),
                 CallbackQueryHandler(food_reserve_done, pattern=r'^(0|1)\:[0-9]$'),
             ],
             settings.STATES['wallet']: [
+                CallbackQueryHandler(menu, pattern=r'^-1$'),
                 CallbackQueryHandler(wallet_deposit, pattern=r'^0$'),
                 CallbackQueryHandler(transaction_history, pattern=r'^1$'),
                 CallbackQueryHandler(wallet_deposit_done, pattern=r'^(?:20000|50000|100000)$'),
