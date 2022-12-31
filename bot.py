@@ -433,7 +433,7 @@ async def bookbank_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
 
     if 'library' in query:
         query = query.replace('library', '')
-        return library_search(update, _)
+        return await library_search(update, _)
 
     book_service = OnlineBookService()
     results = [
