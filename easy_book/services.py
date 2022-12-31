@@ -52,7 +52,7 @@ class BookService:
     def is_exist(cls, book_series: pd.Series) -> bool:
         return LibraryBook.objects.filter(
             title__exact=book_series.title,
-            author__exact=book_series.author,
+            authors__exact=book_series.author,
             publisher__exact=book_series.publisher,
             year__exact=book_series.year
         ).exists()
@@ -61,7 +61,7 @@ class BookService:
     def update_status(cls, book_series: pd.Series):
         LibraryBook.objects.filter(
             title__exact=book_series.title,
-            author__exact=book_series.author,
+            authors__exact=book_series.author,
             publisher__exact=book_series.publisher,
             year__exact=book_series.year
         ).update(
@@ -72,7 +72,7 @@ class BookService:
     def create_book(cls, book_series: pd.Series):
         b = LibraryBook(
             title=book_series.title,
-            author=book_series.author,
+            authors=book_series.author,
             publisher=book_series.publisher,
             year=book_series.year,
             is_exist=book_series.status,
