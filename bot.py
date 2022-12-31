@@ -152,14 +152,16 @@ async def menu(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
     ]
     markup = InlineKeyboardMarkup(keyboard)
     if message:
-        await message.reply_text(
-            settings.MESSAGES['menu'],
+        await message.reply_photo(
+            photo='asset/aut-helper.jpg',
+            caption=settings.MESSAGES['menu'],
             reply_markup=markup,
             parse_mode=ParseMode.MARKDOWN
         )
     else:
-        await query.edit_message_text(
-            settings.MESSAGES['menu'],
+        await query.message.reply_photo(
+            photo='asset/aut-helper.jpg',
+            caption=settings.MESSAGES['menu'],
             reply_markup=markup
         )
 
