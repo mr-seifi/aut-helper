@@ -87,7 +87,7 @@ class BookService:
     @classmethod
     def search_book(cls, query, limit=8):
         return LibraryBook.objects.filter(Q(title__icontains=query) |
-                                          Q(author__icontains=query) |
+                                          Q(authors__icontains=query) |
                                           Q(publisher__icontains=query)).exclude(title__exact='')[:limit]
 
 
