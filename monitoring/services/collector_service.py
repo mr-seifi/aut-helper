@@ -9,9 +9,9 @@ class CollectorService:
         ...
 
     @classmethod
-    def collect_unique_student_within_hour(cls) -> int:
+    def collect_unique_student_within_minutes(cls) -> int:
         return Student.objects.filter(
-            created__gt=timezone.now() - timezone.timedelta(hours=1)
+            created__gt=timezone.now() - timezone.timedelta(minutes=1)
         ).count()
 
     @classmethod
@@ -19,9 +19,9 @@ class CollectorService:
         return Student.objects.count()
 
     @classmethod
-    def collect_unique_trxs_within_hour(cls) -> int:
+    def collect_unique_trxs_within_minutes(cls) -> int:
         return Transaction.objects.filter(
-            created__gt=timezone.now() - timezone.timedelta(hours=1)
+            created__gt=timezone.now() - timezone.timedelta(minutes=1)
         ).count()
 
     @classmethod
