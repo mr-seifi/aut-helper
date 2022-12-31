@@ -158,11 +158,18 @@ async def menu(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
             parse_mode=ParseMode.MARKDOWN
         )
     else:
-        await query.edit_message_text(
-            settings.MESSAGES['menu'],
-            reply_markup=markup,
-            parse_mode=ParseMode.MARKDOWN
-        )
+        try:
+            await query.edit_message_text(
+                settings.MESSAGES['menu'],
+                reply_markup=markup,
+                parse_mode=ParseMode.MARKDOWN
+            )
+        except Exception:
+            await query.message.reply_text(
+                settings.MESSAGES['menu'],
+                reply_markup=markup,
+                parse_mode=ParseMode.MARKDOWN
+            )
 
     return settings.STATES['menu']
 
