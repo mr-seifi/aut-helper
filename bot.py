@@ -162,7 +162,8 @@ async def menu(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
         await query.message.reply_photo(
             photo='asset/aut-helper.jpg',
             caption=settings.MESSAGES['menu'],
-            reply_markup=markup
+            reply_markup=markup,
+            parse_mode=ParseMode.MARKDOWN
         )
 
     return settings.STATES['menu']
@@ -192,7 +193,7 @@ async def food_reserve(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
         ]
     ]
     markup = InlineKeyboardMarkup(keyboard)
-    await query.edit_message_text(
+    await query.message.reply_text(
         f"{settings.MESSAGES['menu_food_main']}\n"
         f"{food_cycle}",
         reply_markup=markup,
@@ -222,7 +223,7 @@ async def food_reserve_confirm(update: Update, _: ContextTypes.DEFAULT_TYPE) -> 
     markup = InlineKeyboardMarkup(keyboard)
     await query.answer()
 
-    await query.edit_message_text(
+    await query.message.reply_text(
         settings.MESSAGES['menu_food_reserve_confirm'].format(
             food=food,
             price=food_price,
@@ -254,13 +255,13 @@ async def food_reserve_done(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int
                                               food=food,
                                               reserve_date=_reservation_date)
     except NotEnoughBalance:
-        await query.edit_message_text(
+        await query.message.reply_text(
             settings.MESSAGES['not_enough_balance']
         )
 
         return ConversationHandler.END
 
-    await query.edit_message_text(
+    await query.message.reply_text(
         settings.MESSAGES['menu_food_reserve_done']
     )
 
@@ -286,7 +287,7 @@ async def wallet(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
         ]
     ]
     markup = InlineKeyboardMarkup(keyboard)
-    await query.edit_message_text(
+    await query.message.reply_text(
         settings.MESSAGES['wallet'].format(balance=balance),
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=markup
@@ -315,7 +316,7 @@ async def wallet_deposit(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
         ]
     ]
     markup = InlineKeyboardMarkup(keyboard)
-    await query.edit_message_text(
+    await query.message.reply_text(
         settings.MESSAGES['wallet_deposit'],
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=markup
@@ -336,7 +337,7 @@ async def wallet_deposit_done(update: Update, _: ContextTypes.DEFAULT_TYPE) -> i
                                      student_id=user_id,
                                      transaction_type=TransactionChoices.DEPOSIT)
 
-    await query.edit_message_text(
+    await query.message.reply_text(
         settings.MESSAGES['wallet_deposit_done'],
         parse_mode=ParseMode.MARKDOWN,
     )
@@ -354,7 +355,7 @@ async def transaction_history(update: Update, _: ContextTypes.DEFAULT_TYPE) -> i
     transactions = payment_service.get_student_transactions(student_id=user_id)
 
     transactions_message = '\n'.join(map(lambda t: str(t), transactions))
-    await query.edit_message_text(
+    await query.message.reply_text(
         f"{settings.MESSAGES['transactions_history']}\n\n"
         f"{transactions_message}",
         parse_mode=ParseMode.MARKDOWN,
