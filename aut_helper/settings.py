@@ -169,12 +169,13 @@ LIBRARY_URL = os.getenv('LIBRARY_URL')
 
 # Telegram messages
 MESSAGES = {
-    'register_name': 'Hey! Give me your name please!',
-    'register_enter_year': 'Hey! Give me your enter_year please!',
-    'register_number': 'Hey! Enter your number!',
-    'register_expired': 'Expired!',
-    'register_done': 'Congratulations!',
-    'menu': 'Menu!',
+    'register_name': 'سلام، به من خوش اومدی، لطفا اسمتو بهم بگو تا بدونم.',
+    'register_enter_year': 'ورودی چه سالی هستی؟ لطفا به صورت کامل بنویس یعنی اینطوری 1399',
+    'register_number': 'لطفا شماره موبایلتو وارد کن.',
+    'register_expired': 'لطفا دوباره تلاش کنید.',
+    'register_done': 'ثبت‌نام با موفقیت انجام شد. \U00002705',
+    'menu': '*منو*\n\n'
+            'از بین گزینه‌های زیر، گزینه‌ای رو که می‌خوای انتخاب کن.',
     'menu_food_main': 'منوی غذای این هفته\n',
     'menu_food_item': '{day}: *{food}*',
     'menu_food_item_reserved': '{day}: *{food}* (**رزرو شده**)',
@@ -185,7 +186,8 @@ MESSAGES = {
     'wallet_deposit': 'مبلغی که می‌خواهید به ولت خود اضافه کنید را انتخاب کنید.',
     'wallet_deposit_done': 'عملیات با موفقیت انجام شد.',
     'transactions_history': 'تراکنش‌های شما',
-    'bookbank_reference': 'برای دسترسی به بزرگ‌ترین کتابخانه‌ی تلگرام به @bookbank_robot پیام دهید.',
+    'bookbank_reference': 'برای اینکه بتونی بین کتابام سرچ کنی روی *جستجوی کتاب*'
+                          ' کلیک کن. **یادت بمونه که کتاب فارسی نداریم**.',
     'library': 'برای اینکه بتونی بین کتابای کتابخونه سرچ کنی روی جستجوی کتاب کلیک کن.',
     'book': 'کتاب {title} *{status}* می‌باشد. برای دریافت به کتابخانه‌ی دانشکده ریاضی مراجعه کنید.'
 }
