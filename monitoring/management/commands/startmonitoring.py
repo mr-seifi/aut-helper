@@ -19,4 +19,4 @@ class Command(BaseCommand):
 
             time = timezone.now().strftime('%X')
             self.stdout.write("%s -- Data fetched!" % time)
-            sleep(3600)
+            sleep(60)
