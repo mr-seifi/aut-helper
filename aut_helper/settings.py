@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'easy_food',
     'easy_book',
     'payment',
+    'easy_vahed',
     'monitoring',
     'drf_spectacular',
 ]
