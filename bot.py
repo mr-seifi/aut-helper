@@ -142,11 +142,11 @@ async def menu(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
 
     keyboard = [
         [
-            InlineKeyboardButton('رزرو غذا', callback_data=0),
+            InlineKeyboardButton('بوک‌بنک', callback_data=2),
             InlineKeyboardButton('کتابخانه', callback_data=1),
         ],
         [
-            InlineKeyboardButton('بوک‌بنک', callback_data=2),
+            InlineKeyboardButton('رزرو غذا', callback_data=0),
             InlineKeyboardButton('کیف پول', callback_data=4)
         ],
     ]
@@ -514,7 +514,7 @@ def main() -> None:
                 MessageHandler(filters.TEXT & ~filters.COMMAND, register_number)
             ],
             settings.STATES['menu']: [
-                CallbackQueryHandler(start, pattern=r'^-1$'),
+                CallbackQueryHandler(menu, pattern=r'^-1$'),
                 CallbackQueryHandler(food_reserve, pattern=r'^0$'),
                 CallbackQueryHandler(library, pattern=r'^1$'),
                 CallbackQueryHandler(bookbank_reference, pattern=r'^2$'),
