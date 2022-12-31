@@ -154,7 +154,8 @@ async def menu(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
     if message:
         await message.reply_text(
             settings.MESSAGES['menu'],
-            reply_markup=markup
+            reply_markup=markup,
+            parse_mode=ParseMode.MARKDOWN
         )
     else:
         await query.edit_message_text(
@@ -377,7 +378,10 @@ async def library(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
     await query.answer()
     keyboard = [
         [
-            InlineKeyboardButton('جستجوی کتاب', switch_inline_query_current_chat='')
+            InlineKeyboardButton('جستجوی کتاب', switch_inline_query_current_chat='library')
+        ],
+        [
+            InlineKeyboardButton('منوی اصلی', callback_data=-1)
         ]
     ]
     markup = InlineKeyboardMarkup(keyboard)
@@ -387,7 +391,7 @@ async def library(update: Update, _: ContextTypes.DEFAULT_TYPE) -> int:
         reply_markup=markup
     )
 
-    return settings.STATES['menu']
+    return settings.STATES['library']
 
 
 async def library_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
@@ -424,6 +428,10 @@ async def bookbank_search(update: Update, _: ContextTypes.DEFAULT_TYPE):
 
     if query == "":
         return
+
+    if 'library' in query:
+        query = query.replace('library', '')
+        return library_search(update, _)
 
     book_service = OnlineBookService()
     results = [
@@ -490,6 +498,7 @@ def main() -> None:
                 MessageHandler(filters.TEXT & ~filters.COMMAND, register_number)
             ],
             settings.STATES['menu']: [
+                CallbackQueryHandler(start, pattern=r'^-1$'),
                 CallbackQueryHandler(food_reserve, pattern=r'^0$'),
                 CallbackQueryHandler(library, pattern=r'^1$'),
                 CallbackQueryHandler(bookbank_reference, pattern=r'^2$'),
