@@ -511,6 +511,6 @@ def main() -> None:
         CommandHandler('lookup', lookup)
     )
     application.add_handler(
-        InlineQueryHandler(search)
+        InlineQueryHandler(bookbank_search)
     )
     application.run_polling()
