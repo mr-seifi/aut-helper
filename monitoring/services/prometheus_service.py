@@ -19,10 +19,10 @@ class PrometheusService:
     def send(self):
         collector_service = CollectorService()
         self._student_number.set(
-            collector_service.collect_unique_student_within_hour()
+            collector_service.collect_unique_student_within_minutes()
         )
         self._trxs_number.set(
-            collector_service.collect_unique_trxs_within_hour()
+            collector_service.collect_unique_trxs_within_minutes()
         )
 
     @staticmethod
