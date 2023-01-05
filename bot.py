@@ -423,7 +423,7 @@ async def _search_result(query):
             id=str(uuid4()),
             title=book.title,
             input_message_content=InputTextMessageContent(f'/lookup {book.uid}'),
-            thumb_url=f'http://{os.getenv("DOMAIN")}/cover/{book.id}.'
+            thumb_url=f'http://{os.getenv("DOMAIN")}/cover/{book.cover.url.split("?")[0].split("/")[-1].split("_")[0]}.'
                       f'{book.cover.url.split("?")[0].split("/")[-1].split(".")[-1]}'
             if book.cover else '',
             description=f'{book.year + "-" if book.year else ""}'
