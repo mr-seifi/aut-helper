@@ -1,31 +1,10 @@
 version: "3.8"
 
 services:
-  web:
-    build: .
+  db:
+    image: postgres:13.0-alpine
     volumes:
-      - data:/app/data/
-      - .:/app/
-    ports:
-      - "8000:8000"
-    env_file:
-      - ./.env
-
-  migrate:
-    build: .
-    command: python manage.py migrate
-    volumes:
-      - data:/app/data/
-      - .:/app/
-    env_file:
-      - ./.env
-
-  bot:
-    build: .
-    command: python manage.py startbot
-    volumes:
-      - data:/app/data/
-      - .:/app/
+      - postgres-data:/var/lib/postgresql/data/
     env_file:
       - ./.env
 
@@ -35,6 +14,122 @@ services:
       - redis-data:/data/
     restart: always
 
+  minio:
+    image: minio/minio
+    volumes:
+      - minio-data:/minio_files
+    env_file:
+      - ./.env
+    command: 'minio server /minio_files --console-address ":9001"'
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+  rabbitmq:
+    image: rabbitmq:3.11-alpine
+    command: rabbitmq-server
+
+  beat:
+    build: .
+    command: celery -A aut_helper beat -l info
+    volumes:
+      - data:/app/data/
+      - .:/app/
+    env_file:
+      - ./.env
+    depends_on:
+      - rabbitmq
+      - db
+
+
+  migrate:
+    build: .
+    command: python manage.py migrate
+    volumes:
+      - data:/app/data/
+      - .:/app/
+    env_file:
+      - ./.env
+    depends_on:
+      - db
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - /etc/prometheus:/etc/prometheus
+      - prometheus-data:/prometheus
+    restart: unless-stopped
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+
+  grafana:
+    image: grafana/grafana-oss:latest
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    restart: unless-stopped
+
+  web:
+    build: .
+    volumes:
+      - data:/app/data/
+      - .:/app/
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./.env
+    depends_on:
+      - migrate
+      - redis
+      - db
+
+  bot:
+    build: .
+    command: python manage.py startbot
+    volumes:
+      - data:/app/data/
+      - .:/app/
+    env_file:
+      - ./.env
+    depends_on:
+      - migrate
+      - redis
+      - db
+
+  worker:
+    build: .
+    command: celery -A aut_helper worker -B -l info
+    volumes:
+      - data:/app/data/
+      - .:/app/
+    env_file:
+      - ./.env
+    depends_on:
+      - migrate
+      - redis
+      - beat
+      - db
+
+  monitoring:
+    build: .
+    command: python manage.py startmonitoring
+    volumes:
+      - data:/app/data/
+      - .:/app/
+    env_file:
+      - ./.env
+    depends_on:
+      - migrate
+      - redis
+      - db
+
 volumes:
   data:
+  postgres-data:
+  minio-data:
   redis-data:
+  prometheus-data:
+  grafana-data:
