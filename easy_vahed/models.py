@@ -1,21 +1,15 @@
 from django.db import models
-from core.models import Student
+from ..core.models import Student
 
 class Course(models.Model):
-    name = models.CharField(max_length=100)
-    unit = models.IntegerField()
-    lecturer = models.CharField(max_length=100)
-    # needs improvment
-    students = models.ManyToManyField(Student,blank=True)
+    name = models.CharField()
+    unit = models.IntegerField(max_length=1)
+    # not sure for class dates 
+    class_date1 = models.DateTimeField()
+    class_date2 = models.DateTimeField()
+    exam_date = models.DateTimeField()
+    students = models.ManyToManyField(Student)
     
     def __str__(self) -> str:
-        return f'{self.name} - {self.lecturer}'
+        return self.name
     
-class ClassTime(models.Model):
-    day = models.CharField(max_length=100)
-    start_time = models.FloatField()
-    end_time = models.FloatField()
-    course = models.ForeignKey(Course,on_delete=models.CASCADE)
-
-class ExamTime(ClassTime):
-    date = models.DateField()
