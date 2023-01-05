@@ -430,6 +430,10 @@ async def _search_result(query):
         ) for book in book_service.search_book(query)
     ]
 
+    for book in book_service.search_book(query):
+        logger.info(f'http://{os.getenv("DOMAIN")}/cover/{book.cover.url.split("?")[0].split("/")[-1]}'
+                    if book.cover else '')
+
     return results
 
 
