@@ -35,6 +35,6 @@ class CourseService:
             units += course.unit
         if units<=20:
             return True
-        elif units>20 and student.gpa>=17:
+        elif units>20 and student.gpa>17:
             return True
         return False
